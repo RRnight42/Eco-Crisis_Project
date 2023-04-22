@@ -37,6 +37,7 @@ public class Enemy : Character
         if(lifePoints < 0)
         {
             playerScript.purityPoints = playerScript.purityPoints - Random.Range(5,11);
+            playerScript.points = playerScript.points + 50;
             Destroy(this.gameObject);
         }
         switch (state)
@@ -112,7 +113,7 @@ public class Enemy : Character
     public override void Attack()
     {
         
-        //intanciar la bola de residuos
+        //instanciar la bola de residuos , por el momento solo ataca a melé quitando 30 de vida
 
 
     }

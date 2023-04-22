@@ -46,6 +46,7 @@ public class Player : Character
    int maxPurityPoints;
    int shieldTime;
    int shieldSeconds;
+   public int points;
   public int purityPoints;
    int time;
 
@@ -94,7 +95,21 @@ public class Player : Character
         fireRate = 0.25f;     
         lifePoints = 100;
         shieldTime = 10;
-        purityPoints = 100;
+        points = 0;
+
+        if(lvl == 1)
+        {
+         purityPoints = 100;
+        }
+        if (lvl == 2)
+        {
+            purityPoints = 250;
+        }
+        if (lvl == 3)
+        {
+            purityPoints = 400;
+        }
+        
         maxLifePoints = 100;
         ammo = 30;
         pointing = false;
@@ -109,8 +124,18 @@ public class Player : Character
 
     void Update()
     {
+/* //development only for checking 
+ 
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            win = true;
+        }
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            lose = true;
+        }
+*/
 
-       
 
         if (lifePoints <= 0)
         {
@@ -433,6 +458,8 @@ public class Player : Character
             yield return new WaitForSeconds(1);
         }
         StopAllCoroutines();
+        PlayerPrefs.SetInt("Points", points);
+        PlayerPrefs.SetInt("Level", lvl + 1);
         controller.canMove = false;
         PlayerPrefs.SetFloat("time", time);
         if (!PlayerPrefs.HasKey("record"))

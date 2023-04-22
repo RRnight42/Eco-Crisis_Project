@@ -6,15 +6,31 @@ public class Spawner : MonoBehaviour
 {
     public GameObject enemy;
     public GameObject[] enemies;
-    Animator animator;
+    int lvl;
+    int SpawnTime;
+
     // Start is called before the first frame update
     void Start()
     {
-        animator = this.GetComponent<Animator>();
+        
         StartCoroutine(Spawnear());
     }
     IEnumerator Spawnear()
     {
+        yield return new WaitForSeconds(2);
+        lvl = PlayerPrefs.GetInt("Level");
+
+        if(lvl == 1) {
+            SpawnTime = 11;
+        }
+        if (lvl == 2) {
+            SpawnTime = 7;
+        }
+        if (lvl == 3) {
+            SpawnTime = 3;
+        }
+
+        
         while (true)
         {
             enemies = GameObject.FindGameObjectsWithTag("enemy");
@@ -24,7 +40,7 @@ public class Spawner : MonoBehaviour
 
             if (enemies.Length < 40)
             {
-                yield return new WaitForSeconds(Random.Range(3, 9));              
+                yield return new WaitForSeconds(Random.Range(1, SpawnTime));              
                 Instantiate(enemy, this.transform.position, this.transform.rotation);
             }
 
