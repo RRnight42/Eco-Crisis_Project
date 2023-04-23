@@ -5,31 +5,36 @@ using UnityEngine;
 
 public class Enemy : Character
 {
- 
-    public enum State { patrol ,  rest }
-    public State state;
+    Animator anim;
 
     public NavMeshAgent AI;
     public GameObject player;
     public Player playerScript;
     public GameObject[] patrolPoints;
     
+    public GameObject bullet ;
+    public GameObject generator;
+
     public bool following;    
     public int point;
+    public float timeShoot;
+    public float shootRate;
     public float angleVision = 110;
     public int range = 20;
-
+    int lvl;
     void Start()
     {
+      
         lifePoints = 100;
-        state = State.rest;
         following = false;
         point = Random.Range(0, 9);
         AI = this.GetComponent<NavMeshAgent>();
+        generator = this.transform.GetChild(1).gameObject;
         patrolPoints = GameObject.FindGameObjectsWithTag("PatrolPoint");
+        anim = this.GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player");
         playerScript = player.GetComponent<Player>();
-        StartCoroutine(StateMachine());
+        StartCoroutine(GetLevel());
     }
 
     void Update()
@@ -40,38 +45,14 @@ public class Enemy : Character
             playerScript.points = playerScript.points + 50;
             Destroy(this.gameObject);
         }
-        switch (state)
-        {
-            case State.patrol:
-                Patrol();
-                Detection();
-                break;
-
-            case State.rest:
-                Attack();
-                Detection();
-                break;      
-        }
+        patrol();
+        detect();
     }
 
-    IEnumerator StateMachine()
-    {
-        while (true)
-        {
-            state = State.patrol;
-            yield return new WaitForSeconds(Random.Range(1,16));
-            if(following == false)
-            {           
-            state = State.rest;
-            yield return new WaitForSeconds(5);
-            }
-           
-        }
-        
-    }
-    void Patrol()
-    {
-        AI.isStopped = false;
+  
+    
+    void patrol()
+    {   
         AI.SetDestination(patrolPoints[point].transform.position);
         Vector3 distance= AI.transform.position - patrolPoints[point].transform.position;
         float DetectionDistance = 4f;
@@ -80,8 +61,10 @@ public class Enemy : Character
         {
             point = Random.Range(0, 9);
         }
+     
     }
-    void Detection()
+ 
+   void detect()
     {
         Vector3 distPlayer = player.transform.position - this.transform.position;
         if (distPlayer.magnitude < range)
@@ -96,6 +79,13 @@ public class Enemy : Character
                     {
                         following = true;
                         AI.SetDestination(player.transform.position);
+
+                        timeShoot = timeShoot + Time.deltaTime;
+                        if (timeShoot > shootRate)
+                        {
+                            anim.SetTrigger("Attack");
+                            timeShoot = 0;
+                        }
                     }
                 }
                 else
@@ -105,16 +95,31 @@ public class Enemy : Character
             }
         }
     }
-    void Resting()
-    {
-        AI.isStopped = true;
-    }
 
     public override void Attack()
     {
-        
-        //instanciar la bola de residuos , por el momento solo ataca a melé quitando 30 de vida
+        //set it on the animator
+       Instantiate(bullet, generator.transform.position, this.transform.rotation);
+       
+    }
+
+    IEnumerator GetLevel()
+    {
+        yield return new WaitForSeconds(1);
+        lvl = PlayerPrefs.GetInt("Level");    
 
 
+        if(lvl == 1)
+        {
+            shootRate = 7f;
+        }
+        if (lvl == 2)
+        {
+            shootRate = 5f;
+        }
+        if (lvl == 3)
+        {
+            shootRate = 3f;
+        }
     }
 }

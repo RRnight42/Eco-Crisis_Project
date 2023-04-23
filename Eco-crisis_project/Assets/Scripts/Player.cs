@@ -22,6 +22,9 @@ public class Player : Character
     GameObject pointingTarget;
     GameObject firingPoint;
 
+    GameObject[] spawners;
+
+
     FPSController controller;
     Player miPlayer;
     Enemy enemyScript;
@@ -124,6 +127,8 @@ public class Player : Character
 
     void Update()
     {
+
+
 /* //development only for checking 
  
         if (Input.GetKeyDown(KeyCode.Y))
@@ -241,6 +246,11 @@ public class Player : Character
                 hittingParticleEffect.transform.position = hit.point ;
                 Destroy(hittingParticleEffect, 4);
 
+            }
+
+            if (hit.transform.tag == "EnemyBullet")
+            {            
+                Destroy(hit.transform.gameObject);
             }
 
             if (hit.transform.tag == "enemy")
@@ -460,6 +470,9 @@ public class Player : Character
         StopAllCoroutines();
         PlayerPrefs.SetInt("Points", points);
         PlayerPrefs.SetInt("Level", lvl + 1);
+
+
+
         controller.canMove = false;
         PlayerPrefs.SetFloat("time", time);
         if (!PlayerPrefs.HasKey("record"))
@@ -583,6 +596,7 @@ public class Player : Character
             else
             {
                 lifePoints = lifePoints - 10;
+                Destroy(other.gameObject);
             }
         }
 

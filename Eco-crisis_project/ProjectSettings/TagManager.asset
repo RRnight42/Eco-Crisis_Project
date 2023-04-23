@@ -13,6 +13,9 @@ TagManager:
   - Start
   - Healing
   - Shield
+  - spawner
+  - enemyM
+  - EnemyBullet
   layers:
   - Default
   - TransparentFX
