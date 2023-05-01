@@ -17,7 +17,7 @@ public class points_load : MonoBehaviour
     void Start()
     {
         recordText.SetActive(false);
-        points.text = "" + PlayerPrefs.GetInt("points");
+        points.text = "" + PlayerPrefs.GetInt("Points");
 
         recordTime = PlayerPrefs.GetInt("record");
         time = PlayerPrefs.GetInt("time");

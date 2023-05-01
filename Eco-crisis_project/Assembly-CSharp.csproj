@@ -63,8 +63,10 @@
     <Compile Include="Assets\Scripts\LoseManager.cs" />
     <Compile Include="Assets\Scripts\Spawner.cs" />
     <Compile Include="Assets\Scripts\MenuManager.cs" />
+    <Compile Include="Assets\Scripts\death_effect.cs" />
     <Compile Include="Assets\Scripts\Enemy.cs" />
     <Compile Include="Assets\Scripts\points_load.cs" />
+    <Compile Include="Assets\Scripts\body_hitbox.cs" />
     <Compile Include="Assets\Scripts\Character.cs" />
     <Compile Include="Assets\Scripts\creditsManager.cs" />
     <Compile Include="Assets\Scripts\waste_ball.cs" />

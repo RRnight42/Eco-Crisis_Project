@@ -14,6 +14,7 @@ public class Enemy : Character
     
     public GameObject bullet ;
     public GameObject generator;
+    public GameObject deathEffect;
 
     public bool following;    
     public int point;
@@ -39,14 +40,24 @@ public class Enemy : Character
 
     void Update()
     {
+      
+        patrol();
+        detect();
+
+
+        if (playerScript.win)
+        {
+            GameObject newdeathEffect = Instantiate(deathEffect, this.transform.position, this.transform.rotation);
+            Destroy(this.gameObject);
+        }
+
         if(lifePoints < 0)
         {
             playerScript.purityPoints = playerScript.purityPoints - Random.Range(5,11);
             playerScript.points = playerScript.points + 50;
+            GameObject newdeathEffect = Instantiate(deathEffect, this.transform.position, this.transform.rotation);
             Destroy(this.gameObject);
         }
-        patrol();
-        detect();
     }
 
   

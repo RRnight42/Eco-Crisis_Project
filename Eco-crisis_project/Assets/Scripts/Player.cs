@@ -11,10 +11,13 @@ public class Player : Character
    public TMP_Text timeText;
 
     Image lifeImage;
-    Image purityImage;
+    public Image purityImage;
 
     public AudioSource tickTimeAudio;
     public AudioSource reloadAudio;
+    public AudioSource FiringAudio;
+
+    public AudioClip firingClip;
 
     public GameObject fullAmmoToast;
     public GameObject emptyAmmoToast;
@@ -23,11 +26,12 @@ public class Player : Character
     GameObject firingPoint;
 
     GameObject[] spawners;
-
+   
+    public body_hitbox body;
 
     FPSController controller;
     Player miPlayer;
-    Enemy enemyScript;
+    
     GameObject shield;
     public GameObject hittingParticle;
 
@@ -40,11 +44,11 @@ public class Player : Character
 
     bool pointing;
     bool shieldActivated;
-    bool win;
+   public bool win;
     bool lose;
 
     int lvl;
-   int ammo;   
+  public int ammo;   
    int maxLifePoints;
    int maxPurityPoints;
    int shieldTime;
@@ -60,7 +64,8 @@ public class Player : Character
    
 
     void Start()
-    { 
+    {
+       
         
         lvl = PlayerPrefs.GetInt("Level");
         if(lvl == 0)
@@ -68,7 +73,8 @@ public class Player : Character
            PlayerPrefs.SetInt("Level", 1);
             lvl = PlayerPrefs.GetInt("Level");
         }
-        
+
+        spawners = GameObject.FindGameObjectsWithTag("spawner");
         miPlayer = this.GetComponent<Player>();
         controller = this.GetComponent<FPSController>();
         PlayerPrefs.DeleteKey("time");
@@ -129,7 +135,7 @@ public class Player : Character
     {
 
 
-/* //development only for checking 
+//development only for checking 
  
         if (Input.GetKeyDown(KeyCode.Y))
         {
@@ -139,7 +145,7 @@ public class Player : Character
         {
             lose = true;
         }
-*/
+
 
 
         if (lifePoints <= 0)
@@ -234,16 +240,17 @@ public class Player : Character
 
  
     public override void Attack()
-    {
+    {      
+        FiringAudio.PlayOneShot(firingClip);
+
         RaycastHit hit;
         
         if (Physics.Raycast(firingPoint.transform.position, firingPoint.transform.right, out hit , 100))
         {
             if (hit.transform.tag == "scene")
             {               
-                GameObject hittingParticleEffect = Instantiate(hittingParticle, hit.transform.position, hittingParticle.transform.rotation);
+                GameObject hittingParticleEffect = Instantiate(hittingParticle, hit.point , hittingParticle.transform.rotation);
                 hittingParticleEffect.GetComponent<ParticleSystem>().Play();
-                hittingParticleEffect.transform.position = hit.point ;
                 Destroy(hittingParticleEffect, 4);
 
             }
@@ -257,201 +264,66 @@ public class Player : Character
             {
                 Vector3 distance = firingPoint.transform.position - hit.transform.position;
 
-                int criticalProbability = Random.Range(1, 25);
-
+                
                 if (distance.magnitude > 90)
                 {
-                    damage = 5;
-
-                    if (criticalProbability == 1)
-                    {
-                        int criticalDamage = damage * 2;
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - criticalDamage;
-                    }
-                    else
-                    {
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - damage;
-                    }
+                  hit.transform.GetComponent<body_hitbox>().Damage(5);                  
                 }
 
                 if (distance.magnitude > 70 && distance.magnitude < 90)
                 {
-                    damage = 10;
-                    if (criticalProbability == 1)
-                    {
-                        int criticalDamage = damage * 2;
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - criticalDamage;
-                    }
-                    else
-                    {
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - damage;
-                    }
+                    hit.transform.GetComponent<body_hitbox>().Damage(10);
                 }
 
                 if (distance.magnitude > 50 && distance.magnitude < 70)
                 {
-                    damage = 15;
-                    if (criticalProbability == 1)
-                    {
-                        int criticalDamage = damage * 2;
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - criticalDamage;
-                    }
-                    else
-                    {
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - damage;
-                    }
+                    hit.transform.GetComponent<body_hitbox>().Damage(15);
                 }
 
                 if (distance.magnitude > 30 && distance.magnitude < 50)
                 {
-                    damage = 20;
-                    if (criticalProbability == 1)
-                    {
-                        int criticalDamage = damage * 2;
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - criticalDamage;
-                    }
-                    else
-                    {
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - damage;
-                    }
+                    hit.transform.GetComponent<body_hitbox>().Damage(20);
                 }
 
                 if (distance.magnitude > 10 && distance.magnitude < 30)
                 {
-                    damage = 25;
-                    if (criticalProbability == 1)
-                    {
-                        int criticalDamage = damage * 2;
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - criticalDamage;
-                    }
-                    else
-                    {
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - damage;
-                    }
+                    hit.transform.GetComponent<body_hitbox>().Damage(25);
                 }
 
                 if (distance.magnitude < 10)
                 {
-                    damage = 40;
-                    if (criticalProbability == 1)
-                    {
-                        int criticalDamage = damage * 2;
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - criticalDamage;
-                    }
-                    else
-                    {
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - damage;
-                    }
+                    hit.transform.GetComponent<body_hitbox>().Damage(40);
                 }
 
             }
             if (hit.transform.tag == "enemyHead")
             {
                 Vector3 distance = firingPoint.transform.position - hit.transform.position;
-                int damageHead = damage * 2;
-                int criticalProbability = Random.Range(1, 25);
+               
 
                 if (distance.magnitude > 90)
                 {
-                    damage = 5;
-                    if (criticalProbability == 1)
-                    {
-                        int criticalDamageHead = damage * 2;
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - criticalDamageHead;
-                    }
-                    else
-                    {
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - damageHead;
-                    }
+                    hit.transform.GetComponent<body_hitbox>().DamageHead(5);
                 }
                 if (distance.magnitude > 70 && distance.magnitude < 90)
                 {
-                    damage = 10;
-                    if (criticalProbability == 1)
-                    {
-                        int criticalDamageHead = damage * 2;
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - criticalDamageHead;
-                    }
-                    else
-                    {
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - damageHead;
-                    }
+                    hit.transform.GetComponent<body_hitbox>().DamageHead(10);
                 }
                 if (distance.magnitude > 50 && distance.magnitude < 70)
                 {
-                    damage = 15;
-                    if (criticalProbability == 1)
-                    {
-                        int criticalDamageHead = damage * 2;
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - criticalDamageHead;
-                    }
-                    else
-                    {
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - damageHead;
-                    }
+                    hit.transform.GetComponent<body_hitbox>().DamageHead(15);
                 }
                 if (distance.magnitude > 30 && distance.magnitude < 50)
                 {
-                    damage = 20;
-                    if (criticalProbability == 1)
-                    {
-                        int criticalDamageHead = damage * 2;
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - criticalDamageHead;
-                    }
-                    else
-                    {
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - damageHead;
-                    }
+                    hit.transform.GetComponent<body_hitbox>().DamageHead(20);
                 }
                 if (distance.magnitude > 10 && distance.magnitude < 30)
                 {
-                    damage = 25;
-                    if (criticalProbability == 1)
-                    {
-                        int criticalDamageHead = damage * 2;
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - criticalDamageHead;
-                    }
-                    else
-                    {
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - damageHead;
-                    }
+                    hit.transform.GetComponent<body_hitbox>().DamageHead(25);
                 }
                 if (distance.magnitude < 10)
                 {
-                    damage = 40;
-                    if (criticalProbability == 1)
-                    {
-                        int criticalDamageHead = damage * 2;
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - criticalDamageHead;
-                    }
-                    else
-                    {
-                        enemyScript = hit.transform.GetComponent<Enemy>();
-                        enemyScript.lifePoints = enemyScript.lifePoints - damageHead;
-                    }
+                    hit.transform.GetComponent<body_hitbox>().DamageHead(40);
                 }
             }
         }
@@ -467,14 +339,21 @@ public class Player : Character
         {
             yield return new WaitForSeconds(1);
         }
+       
         StopAllCoroutines();
         PlayerPrefs.SetInt("Points", points);
         PlayerPrefs.SetInt("Level", lvl + 1);
 
+        for (int i = 0; i < spawners.Length; i++)
+        {
+            GameObject spawner = spawners[i];
+            spawner.gameObject.SetActive(false);
+        }
 
-
+      
+    
         controller.canMove = false;
-        PlayerPrefs.SetFloat("time", time);
+        PlayerPrefs.SetInt("time", time);
         if (!PlayerPrefs.HasKey("record"))
         {
             PlayerPrefs.SetInt("record", time);

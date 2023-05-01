@@ -16,6 +16,8 @@ TagManager:
   - spawner
   - enemyM
   - EnemyBullet
+  - enemyHead
+  - Enemy
   layers:
   - Default
   - TransparentFX
