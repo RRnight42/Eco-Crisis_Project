@@ -101,7 +101,7 @@ public class Player : Character
 
       
         shieldActivated = false;
-        fireRate = 0.25f;     
+        fireRate = 0.2f;     
         lifePoints = 100;
         shieldTime = 10;
         points = 0;
@@ -162,9 +162,9 @@ public class Player : Character
         float life = (float)lifePoints / maxLifePoints;
         lifeImage.fillAmount = life;
 
+
         float purity = (float)purityPoints / maxPurityPoints;
         purityImage.fillAmount = purity;
-
     
         //recharge
         if (Input.GetKeyDown(KeyCode.R))
@@ -333,13 +333,13 @@ public class Player : Character
 
     IEnumerator WinLoad()
     {
+        
 
-       
         while (!win)
         {
             yield return new WaitForSeconds(1);
         }
-       
+       tickTimeAudio.volume = 0;
         StopAllCoroutines();
         PlayerPrefs.SetInt("Points", points);
         PlayerPrefs.SetInt("Level", lvl + 1);
@@ -369,11 +369,12 @@ public class Player : Character
    
     IEnumerator LoseLoad()
     {
-       
+        
         while (!lose)
         {
             yield return new WaitForSeconds(1);
         }
+        tickTimeAudio.volume = 0;
         StopAllCoroutines();
         controller.canMove = false;
         SceneManager.LoadSceneAsync(3, LoadSceneMode.Additive);

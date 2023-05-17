@@ -90,7 +90,7 @@ public class Enemy : Character
                     {
                         following = true;
                         AI.SetDestination(player.transform.position);
-
+                        AI.speed = 4.5f;
                         timeShoot = timeShoot + Time.deltaTime;
                         if (timeShoot > shootRate)
                         {
@@ -102,6 +102,7 @@ public class Enemy : Character
                 else
                 {
                     following = false;
+                    AI.speed = 3.5f;
                 }
             }
         }

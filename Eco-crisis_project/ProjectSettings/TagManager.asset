@@ -18,6 +18,7 @@ TagManager:
   - EnemyBullet
   - enemyHead
   - Enemy
+  - SpawnHealing
   layers:
   - Default
   - TransparentFX

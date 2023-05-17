@@ -14,6 +14,10 @@ public class MenuManager : MonoBehaviour
     public TMP_Text continueLevelInt;
     public TMP_Text deleteText;
     public Image delImage;
+    public Image LVL;
+    public Sprite L1;
+    public Sprite L2;
+    public Sprite L3;
     void Start()
     {
         lvl = PlayerPrefs.GetInt("Level");
@@ -28,7 +32,18 @@ public class MenuManager : MonoBehaviour
 
         if (PlayerPrefs.HasKey("Level"))
         {
-            continueLevelInt.text = "Continue level ( " + PlayerPrefs.GetInt("Level") + " )";
+            if(PlayerPrefs.GetInt("Level") == 1)
+            {
+                LVL.sprite = L1;
+            }
+            if (PlayerPrefs.GetInt("Level") == 2)
+            {
+                LVL.sprite = L2;
+            }
+            if (PlayerPrefs.GetInt("Level") == 3)
+            {
+                LVL.sprite = L3;
+            }
             btn_continue.gameObject.SetActive(true);
         }
     }
