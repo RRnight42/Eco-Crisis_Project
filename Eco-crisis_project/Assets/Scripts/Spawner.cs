@@ -40,8 +40,13 @@ public class Spawner : MonoBehaviour
 
             if (enemies.Length < 40)
             {
-                yield return new WaitForSeconds(Random.Range(1, SpawnTime));              
-                Instantiate(enemy, this.transform.position, this.transform.rotation);
+                yield return new WaitForSeconds(Random.Range(1, SpawnTime)); 
+                    
+                for(int i = 0; i < 5; i++)
+                {
+                 Instantiate(enemy, this.transform.position, this.transform.rotation);
+                }
+               
             }
 
         }

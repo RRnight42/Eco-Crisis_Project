@@ -7,13 +7,13 @@ using UnityEngine.SceneManagement;
 
 public class Player : Character
 {
-
+    
    public TMP_Text timeText;
 
     Image lifeImage;
     public Image purityImage;
 
-    public AudioSource tickTimeAudio;
+  
     public AudioSource reloadAudio;
     public AudioSource FiringAudio;
 
@@ -33,31 +33,56 @@ public class Player : Character
     Player miPlayer;
     
     GameObject shield;
+   public GameObject attack;
     public GameObject hittingParticle;
+    public GameObject hittingParticleDamage;
 
     ParticleSystem shieldParticle;
+    public ParticleSystem attackParticle;
     
 
     Animator targetAnimator;
     Animator shieldAnimator;
+    
     Animator playerAnimator;
 
+  public  Animator DamageDisplayer;
+
+    Animator ShieldRayDisplayer;
+    Animator AttackRayDisplayer;
+
+    public GameObject shieldStateImage;
+    public GameObject attackStateImage;
+
+    public GameObject shieldEffectImage;
+    public GameObject attackEffectImage; 
+
+    public GameObject State_life;
+    public GameObject State_low;
+    public GameObject State_firing;
+    public GameObject State_death;
+    
+
+
     bool pointing;
-    bool shieldActivated;
-   public bool win;
+    public bool shieldActivated;
+    public bool attackActivated;
+    public bool win;
     bool lose;
 
     int lvl;
-  public int ammo;   
-   int maxLifePoints;
-   int maxPurityPoints;
-   int shieldTime;
-   int shieldSeconds;
-   public int points;
-  public int purityPoints;
-   int time;
+    public int ammo;   
+    int maxLifePoints;
+    public int maxPurityPoints;
+    int shieldTime;
+    int shieldSeconds;
+    int attackTime;
+    int attackSeconds;
+    public int points;
+    public int purityPoints;
+    int time;
 
-
+    
 
     float firingTime;
    float fireRate;
@@ -90,11 +115,26 @@ public class Player : Character
 
         playerAnimator = this.GetComponent<Animator>();
 
+        DamageDisplayer = GameObject.Find("Damage").GetComponent<Animator>();
+        ShieldRayDisplayer = GameObject.Find("RayShield").GetComponent<Animator>();
+        AttackRayDisplayer = GameObject.Find("RayAttack").GetComponent<Animator>();
+
+
+
+        State_low.SetActive(false);
+        State_death.SetActive(false);
+        State_firing.SetActive(false);
+        
+      
+
         firingPoint = GameObject.Find("FiringPoint");
 
         shield = GameObject.Find("shieldPlayer");
         shieldParticle = shield.GetComponent<ParticleSystem>();
 
+        attack = GameObject.Find("attackPlayer");
+        attackParticle = attack.GetComponent<ParticleSystem>();
+        
         
         fullAmmoToast.gameObject.SetActive(false);
         emptyAmmoToast.gameObject.SetActive(false);
@@ -104,6 +144,7 @@ public class Player : Character
         fireRate = 0.2f;     
         lifePoints = 100;
         shieldTime = 10;
+        attackTime = 10;
         points = 0;
 
         if(lvl == 1)
@@ -120,6 +161,7 @@ public class Player : Character
         }
         
         maxLifePoints = 100;
+        maxPurityPoints = purityPoints;
         ammo = 30;
         pointing = false;
 
@@ -145,11 +187,19 @@ public class Player : Character
         {
             lose = true;
         }
-
-
+     
+        if (lifePoints > 0 && lifePoints < 25)
+        {
+            State_low.SetActive(true);
+        }
+        else
+        {
+            State_low.SetActive(false);
+        }
 
         if (lifePoints <= 0)
         {
+            State_death.SetActive(true);
             lose = true; 
         }
 
@@ -201,7 +251,7 @@ public class Player : Character
         { 
           if(ammo == 0)
           {
-               
+                State_firing.SetActive(false);
                 playerAnimator.SetBool("firing", false);
               StartCoroutine(ShowEmptyAmmo());
 
@@ -217,7 +267,7 @@ public class Player : Character
             {
                 if (firingTime > fireRate)
                 {
-                   
+                    State_firing.SetActive(true);
                     Attack();
                     ammo = ammo - 1;
                     firingTime = 0;
@@ -228,7 +278,7 @@ public class Player : Character
         }
         else
         {
-           
+            State_firing.SetActive(false);
             playerAnimator.SetBool("firing" , false);
             firingTime = 0;
             
@@ -260,11 +310,14 @@ public class Player : Character
                 Destroy(hit.transform.gameObject);
             }
 
-            if (hit.transform.tag == "enemy")
+            if (hit.transform.tag == "enemy" )
             {
                 Vector3 distance = firingPoint.transform.position - hit.transform.position;
 
-                
+                GameObject hittingParticleEffect = Instantiate(hittingParticleDamage, hit.point, hittingParticle.transform.rotation);
+                hittingParticleEffect.GetComponent<ParticleSystem>().Play();
+                Destroy(hittingParticleEffect, 2);
+
                 if (distance.magnitude > 90)
                 {
                   hit.transform.GetComponent<body_hitbox>().Damage(5);                  
@@ -299,31 +352,37 @@ public class Player : Character
             if (hit.transform.tag == "enemyHead")
             {
                 Vector3 distance = firingPoint.transform.position - hit.transform.position;
-               
-
+                int multiplierAttack = 1;
+                GameObject hittingParticleEffect = Instantiate(hittingParticleDamage, hit.point, hittingParticle.transform.rotation);
+                hittingParticleEffect.GetComponent<ParticleSystem>().Play();
+                Destroy(hittingParticleEffect, 2);
+                if (attackActivated)
+                {
+                    multiplierAttack = 2;
+                }
                 if (distance.magnitude > 90)
                 {
-                    hit.transform.GetComponent<body_hitbox>().DamageHead(5);
+                    hit.transform.GetComponent<body_hitbox>().DamageHead(5 * multiplierAttack);
                 }
                 if (distance.magnitude > 70 && distance.magnitude < 90)
                 {
-                    hit.transform.GetComponent<body_hitbox>().DamageHead(10);
+                    hit.transform.GetComponent<body_hitbox>().DamageHead(10 * multiplierAttack);
                 }
                 if (distance.magnitude > 50 && distance.magnitude < 70)
                 {
-                    hit.transform.GetComponent<body_hitbox>().DamageHead(15);
+                    hit.transform.GetComponent<body_hitbox>().DamageHead(15 * multiplierAttack);
                 }
                 if (distance.magnitude > 30 && distance.magnitude < 50)
                 {
-                    hit.transform.GetComponent<body_hitbox>().DamageHead(20);
+                    hit.transform.GetComponent<body_hitbox>().DamageHead(20 * multiplierAttack);
                 }
                 if (distance.magnitude > 10 && distance.magnitude < 30)
                 {
-                    hit.transform.GetComponent<body_hitbox>().DamageHead(25);
+                    hit.transform.GetComponent<body_hitbox>().DamageHead(25 * multiplierAttack);
                 }
                 if (distance.magnitude < 10)
                 {
-                    hit.transform.GetComponent<body_hitbox>().DamageHead(40);
+                    hit.transform.GetComponent<body_hitbox>().DamageHead(40 * multiplierAttack);
                 }
             }
         }
@@ -339,7 +398,7 @@ public class Player : Character
         {
             yield return new WaitForSeconds(1);
         }
-       tickTimeAudio.volume = 0;
+      
         StopAllCoroutines();
         PlayerPrefs.SetInt("Points", points);
         PlayerPrefs.SetInt("Level", lvl + 1);
@@ -374,7 +433,7 @@ public class Player : Character
         {
             yield return new WaitForSeconds(1);
         }
-        tickTimeAudio.volume = 0;
+       
         StopAllCoroutines();
         controller.canMove = false;
         SceneManager.LoadSceneAsync(3, LoadSceneMode.Additive);
@@ -385,7 +444,7 @@ public class Player : Character
 
     IEnumerator TimeCounter()
     {   
-        tickTimeAudio.PlayDelayed(4f);
+        
         yield return new WaitForSeconds(3);
         
         while (true)
@@ -423,8 +482,32 @@ public class Player : Character
         emptyAmmoToast.gameObject.SetActive(false);
     }
 
+    IEnumerator AttackActive()
+    {
+        attackStateImage.SetActive(true);
+        AttackRayDisplayer.SetBool("ActivatedRay", true);
+        attackSeconds = 0;
+        attackActivated = true;
+        attackParticle.Play();
+
+        while (attackSeconds < attackTime)
+        {
+            yield return new WaitForSeconds(1);
+            attackSeconds = attackSeconds + 1;
+        }
+
+        yield return null;
+        attackParticle.Stop();
+        attackActivated = false;
+        attackStateImage.SetActive(false);
+        AttackRayDisplayer.SetBool("ActivatedRay", false);
+
+    }
+
     IEnumerator ShieldActive()
     {
+        shieldStateImage.SetActive(true);
+        ShieldRayDisplayer.SetBool("ActivatedRay", true);
         shieldSeconds = 0;
         shieldActivated = true;
         shieldAnimator.SetBool("shield", true);
@@ -439,7 +522,8 @@ public class Player : Character
         yield return null;
         shieldParticle.Stop();
         shieldActivated = false;
-        
+        shieldStateImage.SetActive(false);
+        ShieldRayDisplayer.SetBool("ActivatedRay", false);
         shieldAnimator.SetBool("shield", false);
     }
 
@@ -450,6 +534,14 @@ public class Player : Character
         {
             StartCoroutine(ShieldActive());
             Destroy(other.gameObject);
+        }
+
+
+        if(other.gameObject.tag == "Attack"){
+
+            StartCoroutine(AttackActive());
+            Destroy(other.gameObject);
+
         }
         if(other.gameObject.tag == "Healing")
         {
@@ -475,20 +567,9 @@ public class Player : Character
             }
             else
             {
+                DamageDisplayer.SetTrigger("Damage");
                 lifePoints = lifePoints - 10;
                 Destroy(other.gameObject);
-            }
-        }
-
-        if (other.gameObject.tag == "enemy")
-        {
-            if (shieldActivated)
-            {
-                lifePoints = lifePoints - 5;
-            }
-            else
-            {
-                lifePoints = lifePoints - 30;
             }
         }
 

@@ -11,8 +11,6 @@ public class MenuManager : MonoBehaviour
     public Button btn_continue;
     float deleteTime = 0;
     float completed = 7;
-    public TMP_Text continueLevelInt;
-    public TMP_Text deleteText;
     public Image delImage;
     public Image LVL;
     public Sprite L1;
@@ -53,12 +51,12 @@ public class MenuManager : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Delete))
         {
-            deleteText.color = Color.red;
+          
             deleteTime += Time.deltaTime;
         }
         if (Input.GetKeyUp(KeyCode.Delete))
         {
-            deleteText.color = Color.white;
+           
             deleteTime = 0;
 
         }

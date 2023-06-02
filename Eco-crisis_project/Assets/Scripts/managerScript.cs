@@ -1,12 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 
 public class managerScript : MonoBehaviour
 {
-    public TMP_Text toastLvl;
+    public Image toastLvl;
+
+    public Sprite L1;
+    public Sprite L2;
+    public Sprite L3;
     int lvl;
     public Color alpha;
     
@@ -14,12 +19,26 @@ public class managerScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+   
         lvl = PlayerPrefs.GetInt("Level");
         if (lvl == 0)
         {
             PlayerPrefs.SetInt("Level", 1);
         }
-        toastLvl.text = "Level " + PlayerPrefs.GetInt("Level");
+
+        if(lvl == 1)
+        {
+            toastLvl.sprite = L1;
+        }
+        if (lvl == 2)
+        {
+            toastLvl.sprite = L2;
+        }
+        if (lvl == 3)
+        {
+            toastLvl.sprite = L3;
+        }
+        
         StartCoroutine(ShowToast());
         
     }

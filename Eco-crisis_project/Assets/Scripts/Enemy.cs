@@ -26,7 +26,7 @@ public class Enemy : Character
     void Start()
     {
       
-        lifePoints = 100;
+        lifePoints = 50;
         following = false;
         point = Random.Range(0, 9);
         AI = this.GetComponent<NavMeshAgent>();
@@ -115,6 +115,22 @@ public class Enemy : Character
        
     }
 
+
+    public void MeleeAttack()
+    {
+        Player player = GameObject.Find("Player").GetComponent<Player>();
+        player.DamageDisplayer.SetTrigger("Damage");
+        if (player.shieldActivated)
+        {
+            player.lifePoints -= 5;
+        }
+        else
+        {
+            player.lifePoints -= 20;
+        }
+
+    }
+
     IEnumerator GetLevel()
     {
         yield return new WaitForSeconds(1);
@@ -132,6 +148,14 @@ public class Enemy : Character
         if (lvl == 3)
         {
             shootRate = 3f;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.tag == "Player")
+        {
+            anim.SetTrigger("Attack");
         }
     }
 }
